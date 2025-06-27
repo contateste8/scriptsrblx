@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Infinite Yield Script</title>
+  <title>Script Hub</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     * {
@@ -21,6 +21,7 @@
       justify-content: center;
       align-items: center;
       color: white;
+      padding: 20px;
     }
 
     @keyframes gradient {
@@ -30,76 +31,156 @@
     }
 
     .container {
-      background-color: rgba(0, 0, 0, 0.75);
+      background-color: rgba(0, 0, 0, 0.8);
       padding: 30px;
       border-radius: 20px;
-      box-shadow: 0 0 25px rgba(0,0,0,0.5);
-      text-align: center;
-      max-width: 500px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      transition: all 0.3s ease-in-out;
     }
 
     h1 {
       font-size: 2rem;
-      margin-bottom: 20px;
+      text-align: center;
+      margin-bottom: 25px;
       background: linear-gradient(to right, #12c2e9, #c471ed, #f64f59);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    p {
-      margin-bottom: 20px;
-      font-size: 1.1rem;
-      color: #ddd;
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: none;
+      background-color: #1a1a1a;
+      color: white;
+      resize: none;
+      transition: 0.3s;
     }
 
-    .btn-copy {
-      padding: 12px 25px;
+    input:focus, textarea:focus {
+      outline: none;
+      background-color: #222;
+    }
+
+    .btn {
       background: linear-gradient(to right, #f64f59, #c471ed, #12c2e9);
       border: none;
+      padding: 12px 20px;
       color: white;
-      font-size: 1rem;
       border-radius: 10px;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.3s;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.4s ease, transform 0.2s ease;
     }
 
-    .btn-copy:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 10px #fff;
+    .btn:hover {
+      transform: scale(1.02);
     }
 
-    .icon {
-      font-size: 2rem;
-      margin-bottom: 15px;
-      color: #fff;
+    .script-block {
+      background-color: #111;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      position: relative;
     }
 
-    .success-message {
-      margin-top: 15px;
+    .copy-message {
       color: #0f0;
-      display: none;
+      font-size: 0.95rem;
+      margin-top: 10px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .copy-message.active {
+      opacity: 1;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <div class="icon"><i class="fas fa-code"></i></div>
-    <h1>Infinite Yield Script</h1>
-    <p>Clique no botão abaixo para copiar o script do Infinite Yield!</p>
-    <button class="btn-copy" onclick="copyScript()">
-      <i class="fas fa-copy"></i> Copiar Script
+    <h1><i class="fas fa-terminal"></i> Script Hub</h1>
+
+    <input type="text" id="searchInput" placeholder="🔎 Buscar scripts..." oninput="searchScripts()">
+
+    <div class="script-block" data-name="Infinite Yield">
+      <strong>Infinite Yield</strong>
+      <p>Script de admin completo.</p>
+      <button class="btn" onclick="copyScript(this, 'loadstring(game:HttpGet(\\\"https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source\\\"))()')">
+        <i class="fas fa-copy"></i> Copiar Script
+      </button>
+      <div class="copy-message">✅ Script copiado!</div>
+    </div>
+
+    <h2 style="margin-top: 30px; font-size: 1.3rem;">➕ Adicionar novo script</h2>
+    <input type="text" id="newScriptName" placeholder="Nome do script">
+    <textarea id="newScriptCode" rows="4" placeholder="Cole aqui o código do script..."></textarea>
+    <button class="btn" onclick="addScript()">
+      <i class="fas fa-plus"></i> Adicionar Script
     </button>
-    <div class="success-message" id="successMsg">Script copiado com sucesso!</div>
   </div>
 
   <script>
-    function copyScript() {
-      const script = `loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()`;
-      navigator.clipboard.writeText(script).then(() => {
-        const msg = document.getElementById("successMsg");
-        msg.style.display = "block";
-        setTimeout(() => msg.style.display = "none", 2500);
+    function copyScript(button, scriptText) {
+      navigator.clipboard.writeText(scriptText.replace(/\\\"/g, '"')).then(() => {
+        const message = button.nextElementSibling;
+        message.classList.add("active");
+        setTimeout(() => message.classList.remove("active"), 2500);
+      });
+    }
+
+    function addScript() {
+      const name = document.getElementById("newScriptName").value.trim();
+      const code = document.getElementById("newScriptCode").value.trim();
+      if (!name || !code) return alert("Preencha todos os campos!");
+
+      const container = document.createElement("div");
+      container.className = "script-block";
+      container.setAttribute("data-name", name.toLowerCase());
+
+      const title = document.createElement("strong");
+      title.innerText = name;
+
+      const desc = document.createElement("p");
+      desc.innerText = "Script personalizado.";
+
+      const button = document.createElement("button");
+      button.className = "btn";
+      button.innerHTML = '<i class="fas fa-copy"></i> Copiar Script';
+      button.onclick = () => copyScript(button, code);
+
+      const msg = document.createElement("div");
+      msg.className = "copy-message";
+      msg.innerText = "✅ Script copiado!";
+
+      container.appendChild(title);
+      container.appendChild(desc);
+      container.appendChild(button);
+      container.appendChild(msg);
+
+      document.querySelector(".container").appendChild(container);
+
+      // limpar campos
+      document.getElementById("newScriptName").value = "";
+      document.getElementById("newScriptCode").value = "";
+    }
+
+    function searchScripts() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      document.querySelectorAll(".script-block").forEach(block => {
+        const name = block.getAttribute("data-name");
+        block.style.display = name.includes(query) ? "block" : "none";
       });
     }
   </script>
